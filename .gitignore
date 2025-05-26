@@ -1,3 +1,4 @@
 .terraform
 env.ps1
 credentials.json
+token.json
