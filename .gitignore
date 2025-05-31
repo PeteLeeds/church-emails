@@ -3,3 +3,4 @@ env.ps1
 credentials.json
 token.json
 __pycache__
+venv
