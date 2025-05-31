@@ -7,6 +7,7 @@ from email.message import EmailMessage
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import base64
+from create_email import create_email_message
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly", "https://www.googleapis.com/auth/gmail.send"]
@@ -49,7 +50,8 @@ def gmail_send_message(service):
   try:
     message = EmailMessage()
 
-    message.set_content("This is automated draft mail")
+    email_message = create_email_message()
+    message.set_content(email_message)
 
     message["To"] = os.environ.get('EMAIL_TO')
     message["From"] = os.environ.get('EMAIL_FROM')
