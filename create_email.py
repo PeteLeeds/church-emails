@@ -17,9 +17,8 @@ def create_email_message():
         now = datetime.now(timezone.utc)
         if (start_time - now).days > 7:
             continue
-        email += f"{event.get('SUMMARY')}\n"
-        email += f"{event.get('LOCATION')}, {start_time} - {event.get('DTEND').dt}\n\n"
-        email += f"{event.get('DESCRIPTION')}\n"
-        email += "--------------\n\n"
-    email += f"If you have an event you would like to advertise, please contact the church at {CONTACT_EMAIL}"
+        email += f"<h3>{event.get('SUMMARY')}</h3>"
+        email += f"<p><b>{event.get('LOCATION')}, {start_time} - {event.get('DTEND').dt}</b></p>"
+        email += f"<p>{event.get('DESCRIPTION')}<p>"
+    email += f"<br/>If you have an event you would like to advertise, please contact the church at {CONTACT_EMAIL}"
     return email

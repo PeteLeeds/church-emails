@@ -1,3 +1,5 @@
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import os.path
 
 from google.auth.transport.requests import Request
@@ -49,10 +51,12 @@ def main():
 
 def gmail_send_message(service):
     try:
-        message = EmailMessage()
+        message = MIMEMultipart("alternative")
 
         email_message = create_email_message()
-        message.set_content(email_message)
+
+        message.attach(MIMEText('Here are this week\'s church events', "plain"))
+        message.attach(MIMEText(email_message, "html"))
 
         message["To"] = os.environ.get("EMAIL_TO")
         message["From"] = os.environ.get("EMAIL_FROM")
