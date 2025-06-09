@@ -55,12 +55,12 @@ def gmail_send_message(service):
 
         email_message = create_email_message()
 
-        message.attach(MIMEText('Here are this week\'s church events', "plain"))
+        message.attach(MIMEText("Here are this week's church events", "plain"))
         message.attach(MIMEText(email_message, "html"))
 
         message["To"] = os.environ.get("EMAIL_TO")
         message["From"] = os.environ.get("EMAIL_FROM")
-        message["Subject"] = "Automated draft"
+        message["Subject"] = "This Week's Events"
         # encoded message
         encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
 

@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL")
 CHURCH_ID = os.environ.get("CHURCH_ID")
 
+
 def create_email_message():
     text = requests.get(
         f"https://www.achurchnearyou.com/church/{CHURCH_ID}/service-and-events/feed/"
@@ -13,6 +14,7 @@ def create_email_message():
 
     calendar = icalendar.Calendar.from_ical(text)
     email = "<p>Please see below for this week's events:</p>"
+    email += f"<p>For full details of all future events, please see our website on <a href=https://www.achurchnearyou.com/church/{CHURCH_ID}/>A Church Near You</a>"
     for event in calendar.events:
         start_time = event.get("DTSTART").dt
         now = datetime.now(timezone.utc)
