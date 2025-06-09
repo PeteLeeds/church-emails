@@ -12,7 +12,7 @@ def create_email_message():
     ).text
 
     calendar = icalendar.Calendar.from_ical(text)
-    email = ""
+    email = "<p>Please see below for this week's events:</p>"
     for event in calendar.events:
         start_time = event.get("DTSTART").dt
         now = datetime.now(timezone.utc)
