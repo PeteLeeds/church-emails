@@ -4,10 +4,11 @@ import requests
 from datetime import datetime, timezone
 
 CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL")
+CHURCH_ID = os.environ.get("CHURCH_ID")
 
 def create_email_message():
     text = requests.get(
-        "https://www.achurchnearyou.com/church/18109/service-and-events/feed/"
+        f"https://www.achurchnearyou.com/church/{CHURCH_ID}/service-and-events/feed/"
     ).text
 
     calendar = icalendar.Calendar.from_ical(text)
