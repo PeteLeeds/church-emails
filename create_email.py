@@ -16,7 +16,7 @@ def create_email_message():
     for event in calendar.events:
         start_time = event.get("DTSTART").dt
         now = datetime.now(timezone.utc)
-        if (start_time - now).days > 7:
+        if (start_time - now).days > 6 or (start_time - now).days < 0:
             continue
         email += f"<h3>{event.get('SUMMARY')}</h3>"
         email += f"<p><b>{event.get('LOCATION')}, {start_time} - {event.get('DTEND').dt}</b></p>"
