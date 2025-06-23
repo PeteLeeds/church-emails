@@ -18,10 +18,7 @@ SCOPES = [
 ]
 
 
-def main():
-    """Shows basic usage of the Gmail API.
-    Lists the user's Gmail labels.
-    """
+def google_login():
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -38,14 +35,17 @@ def main():
         # Save the credentials for the next run
         with open("token.json", "w") as token:
             token.write(creds.to_json())
+    return creds
 
+
+def main():
+    creds = google_login()
     try:
         # Call the Gmail API
         service = build("gmail", "v1", credentials=creds)
         gmail_send_message(service)
 
     except HttpError as error:
-        # TODO(developer) - Handle errors from gmail API.
         print(f"An error occurred: {error}")
 
 
