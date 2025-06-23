@@ -1,6 +1,7 @@
 import os
 import icalendar
 import requests
+import calendar
 from datetime import datetime, timezone
 
 CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL")
@@ -12,10 +13,25 @@ def in_next_week(event):
     now = datetime.now(timezone.utc)
     return (start_time - now).days > 0 and (start_time - now).days < 6
 
+def get_date_string(date):
+    day = date.day
+    month = calendar.month_name[date.month]
+    year = date.year
+    return f'{day} {month} {year}'
+
+def get_time_string(date):
+    minute = date.minute if date.minute >= 10 else f'0{date.minute}'
+    return f'{date.hour}:{minute}'
+
+def get_datetime_string(startDate, endDate):
+    if (startDate.day == endDate.day and startDate.month == endDate.month):
+        return f'{get_date_string(startDate)}, {get_time_string(startDate)} - {get_time_string(endDate)}'
+    else:
+        return f'{get_date_string(startDate)} {get_time_string(startDate)} - {get_date_string(startDate)} {get_time_string(endDate)}'
 
 def format_event_for_email(event):
     formatted_event = f"<h3>{event.get('SUMMARY')}</h3>"
-    formatted_event += f"<p><b>{event.get('LOCATION')}, {event.get('DTSTART').dt} - {event.get('DTEND').dt}</b></p>"
+    formatted_event += f"<p><b>{event.get('LOCATION')}, {get_datetime_string(event.get('DTSTART').dt, event.get('DTEND').dt)}</b></p>"
     formatted_event += f"<p>{event.get('DESCRIPTION')}<p>"
     return formatted_event
 
