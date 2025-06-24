@@ -11,7 +11,7 @@ CHURCH_ID = os.environ.get("CHURCH_ID")
 def in_next_week(event):
     start_time = event.get("DTSTART").dt
     now = datetime.now(timezone.utc)
-    return (start_time - now).days > 0 and (start_time - now).days < 6
+    return (start_time - now).days >= 0 and (start_time - now).days < 6
 
 def get_date_string(date):
     day = date.day
