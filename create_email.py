@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL")
 CHURCH_ID = os.environ.get("CHURCH_ID")
 
+if (CHURCH_ID == None):
+    raise Exception('Church ID is not defined')
 
 def in_next_week(event):
     start_time = event.get("DTSTART").dt
