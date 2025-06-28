@@ -60,7 +60,7 @@ def gmail_send_message(service):
 
         message["To"] = os.environ.get("EMAIL_TO")
         message["From"] = os.environ.get("EMAIL_FROM")
-        message["Subject"] = "This Week's Events"
+        message["Subject"] = "Upcoming Events"
         # encoded message
         encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
 

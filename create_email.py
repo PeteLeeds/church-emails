@@ -35,6 +35,10 @@ class Event:
         now = datetime.now(timezone.utc)
         return (self.start_time - now).days >= 0 and (self.start_time - now).days < 6
 
+    def in_mid_future(self):
+        now = datetime.now(timezone.utc)
+        return (self.start_time - now).days >= 0 and (self.start_time - now).days < 90
+
     def get_datetime_string(self):
         if (
             self.start_time.day == self.end_time.day
@@ -57,6 +61,8 @@ def get_unique_future_events(events):
     duplicate_event_names = []
     current_unique_events = []
     for event in events:
+        if not event.in_mid_future():
+            continue
         if event.title in duplicate_event_names:
             continue
         duplicate = False
@@ -79,10 +85,13 @@ def create_email_message():
 
     calendar = icalendar.Calendar.from_ical(text)
     events = [Event(eventData) for eventData in calendar.events]
-    email = "<p>Please see below for this week's events:</p>"
-    email += f"<p>For full details of all future events, please see our website on <a href=https://www.achurchnearyou.com/church/{CHURCH_ID}/>A Church Near You</a>"
+    email = "<h2>This Week's Events</h2>"
+    email += f"<p>For full details of all events, please see our website on <a href=https://www.achurchnearyou.com/church/{CHURCH_ID}/>A Church Near You.</a>"
     for event in events:
         if event.in_next_week():
             email += event.format_for_email()
+    email += "<h2>Future Events</h2>"
+    for event in get_unique_future_events(events):
+        email += event.format_for_email()
     email += f"<br/>If you have an event you would like to advertise, please contact the church at {CONTACT_EMAIL}"
     return email
