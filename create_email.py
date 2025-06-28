@@ -7,19 +7,21 @@ from datetime import datetime, timezone
 CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL")
 CHURCH_ID = os.environ.get("CHURCH_ID")
 
-if (CHURCH_ID == None):
-    raise Exception('Church ID is not defined')
+if CHURCH_ID == None:
+    raise Exception("Church ID is not defined")
 
 
 def get_date_string(date):
     day = date.day
     month = calendar.month_name[date.month]
     year = date.year
-    return f'{day} {month} {year}'
+    return f"{day} {month} {year}"
+
 
 def get_time_string(date):
-    minute = date.minute if date.minute >= 10 else f'0{date.minute}'
-    return f'{date.hour}:{minute}'
+    minute = date.minute if date.minute >= 10 else f"0{date.minute}"
+    return f"{date.hour}:{minute}"
+
 
 class Event:
     def __init__(self, ical_data):
