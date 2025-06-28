@@ -45,6 +45,28 @@ class Event:
         return formatted_event
 
 
+def get_unique_future_events(events):
+    duplicate_event_names = []
+    current_unique_events = []
+    for eventData in events:
+        name = eventData.get("SUMMARY")
+        if name in duplicate_event_names:
+            continue
+        duplicate = False
+        for i in range(len(current_unique_events)):
+            event = current_unique_events[i]
+            if event.get("SUMMARY") == name:
+                current_unique_events.pop(i)
+                duplicate_event_names.append(event.get("SUMMARY"))
+                duplicate = True
+                break
+        if not duplicate:
+            current_unique_events.append(eventData)
+    for event in current_unique_events:
+        print(event.get("SUMMARY"))
+    return current_unique_events
+
+
 def create_email_message():
     text = requests.get(
         f"https://www.achurchnearyou.com/church/{CHURCH_ID}/service-and-events/feed/"
