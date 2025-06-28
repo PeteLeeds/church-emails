@@ -22,48 +22,51 @@ def get_time_string(date):
     return f'{date.hour}:{minute}'
 
 class Event:
-    def __init__(self, icalData):
-        self.icalData = icalData
+    def __init__(self, ical_data):
+        self.title = ical_data.get("SUMMARY")
+        self.start_time = ical_data.get("DTSTART").dt
+        self.end_time = ical_data.get("DTEND").dt
+        self.location = ical_data.get("LOCATION")
+        self.description = ical_data.get("DESCRIPTION")
 
     def in_next_week(self):
-        start_time = self.icalData.get("DTSTART").dt
         now = datetime.now(timezone.utc)
-        return (start_time - now).days >= 0 and (start_time - now).days < 6
+        return (self.start_time - now).days >= 0 and (self.start_time - now).days < 6
 
     def get_datetime_string(self):
-        startDate = self.icalData.get("DTSTART").dt
-        endDate = self.icalData.get("DTEND").dt
-        if startDate.day == endDate.day and startDate.month == endDate.month:
-            return f"{get_date_string(startDate)}, {get_time_string(startDate)} - {get_time_string(endDate)}"
+        if (
+            self.start_time.day == self.end_time.day
+            and self.start_time.month == self.end_time.month
+        ):
+            return f"{get_date_string(self.start_time)}, {get_time_string(self.start_time)} - {get_time_string(self.end_time)}"
         else:
-            return f"{get_date_string(startDate)} {get_time_string(startDate)} - {get_date_string(startDate)} {get_time_string(endDate)}"
+            return f"{get_date_string(self.start_time)} {get_time_string(self.start_time)} - {get_date_string(self.end_time)} {get_time_string(self.end_time)}"
 
     def format_for_email(self):
-        formatted_event = f"<h3>{self.icalData.get('SUMMARY')}</h3>"
-        formatted_event += f"<p><b>{self.icalData.get('LOCATION')}, {self.get_datetime_string()}</b></p>"
-        formatted_event += f"<p>{self.icalData.get('DESCRIPTION')}<p>"
+        formatted_event = f"<h3>{self.title}</h3>"
+        formatted_event += (
+            f"<p><b>{self.location}, {self.get_datetime_string()}</b></p>"
+        )
+        formatted_event += f"<p>{self.description}<p>"
         return formatted_event
 
 
 def get_unique_future_events(events):
     duplicate_event_names = []
     current_unique_events = []
-    for eventData in events:
-        name = eventData.get("SUMMARY")
-        if name in duplicate_event_names:
+    for event in events:
+        if event.title in duplicate_event_names:
             continue
         duplicate = False
         for i in range(len(current_unique_events)):
-            event = current_unique_events[i]
-            if event.get("SUMMARY") == name:
+            event_to_compare = current_unique_events[i]
+            if event_to_compare.title == event.title:
                 current_unique_events.pop(i)
-                duplicate_event_names.append(event.get("SUMMARY"))
+                duplicate_event_names.append(event.title)
                 duplicate = True
                 break
         if not duplicate:
-            current_unique_events.append(eventData)
-    for event in current_unique_events:
-        print(event.get("SUMMARY"))
+            current_unique_events.append(event)
     return current_unique_events
 
 
@@ -73,10 +76,10 @@ def create_email_message():
     ).text
 
     calendar = icalendar.Calendar.from_ical(text)
+    events = [Event(eventData) for eventData in calendar.events]
     email = "<p>Please see below for this week's events:</p>"
     email += f"<p>For full details of all future events, please see our website on <a href=https://www.achurchnearyou.com/church/{CHURCH_ID}/>A Church Near You</a>"
-    for eventData in calendar.events:
-        event = Event(eventData)
+    for event in events:
         if event.in_next_week():
             email += event.format_for_email()
     email += f"<br/>If you have an event you would like to advertise, please contact the church at {CONTACT_EMAIL}"
