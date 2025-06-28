@@ -10,10 +10,6 @@ CHURCH_ID = os.environ.get("CHURCH_ID")
 if (CHURCH_ID == None):
     raise Exception('Church ID is not defined')
 
-def in_next_week(event):
-    start_time = event.get("DTSTART").dt
-    now = datetime.now(timezone.utc)
-    return (start_time - now).days >= 0 and (start_time - now).days < 6
 
 def get_date_string(date):
     day = date.day
@@ -25,17 +21,28 @@ def get_time_string(date):
     minute = date.minute if date.minute >= 10 else f'0{date.minute}'
     return f'{date.hour}:{minute}'
 
-def get_datetime_string(startDate, endDate):
-    if (startDate.day == endDate.day and startDate.month == endDate.month):
-        return f'{get_date_string(startDate)}, {get_time_string(startDate)} - {get_time_string(endDate)}'
-    else:
-        return f'{get_date_string(startDate)} {get_time_string(startDate)} - {get_date_string(startDate)} {get_time_string(endDate)}'
+class Event:
+    def __init__(self, icalData):
+        self.icalData = icalData
 
-def format_event_for_email(event):
-    formatted_event = f"<h3>{event.get('SUMMARY')}</h3>"
-    formatted_event += f"<p><b>{event.get('LOCATION')}, {get_datetime_string(event.get('DTSTART').dt, event.get('DTEND').dt)}</b></p>"
-    formatted_event += f"<p>{event.get('DESCRIPTION')}<p>"
-    return formatted_event
+    def in_next_week(self):
+        start_time = self.icalData.get("DTSTART").dt
+        now = datetime.now(timezone.utc)
+        return (start_time - now).days >= 0 and (start_time - now).days < 6
+
+    def get_datetime_string(self):
+        startDate = self.icalData.get("DTSTART").dt
+        endDate = self.icalData.get("DTEND").dt
+        if startDate.day == endDate.day and startDate.month == endDate.month:
+            return f"{get_date_string(startDate)}, {get_time_string(startDate)} - {get_time_string(endDate)}"
+        else:
+            return f"{get_date_string(startDate)} {get_time_string(startDate)} - {get_date_string(startDate)} {get_time_string(endDate)}"
+
+    def format_for_email(self):
+        formatted_event = f"<h3>{self.icalData.get('SUMMARY')}</h3>"
+        formatted_event += f"<p><b>{self.icalData.get('LOCATION')}, {self.get_datetime_string()}</b></p>"
+        formatted_event += f"<p>{self.icalData.get('DESCRIPTION')}<p>"
+        return formatted_event
 
 
 def create_email_message():
@@ -46,8 +53,9 @@ def create_email_message():
     calendar = icalendar.Calendar.from_ical(text)
     email = "<p>Please see below for this week's events:</p>"
     email += f"<p>For full details of all future events, please see our website on <a href=https://www.achurchnearyou.com/church/{CHURCH_ID}/>A Church Near You</a>"
-    for event in calendar.events:
-        if in_next_week(event):
-            email += format_event_for_email(event)
+    for eventData in calendar.events:
+        event = Event(eventData)
+        if event.in_next_week():
+            email += event.format_for_email()
     email += f"<br/>If you have an event you would like to advertise, please contact the church at {CONTACT_EMAIL}"
     return email
