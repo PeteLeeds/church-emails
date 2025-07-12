@@ -18,7 +18,7 @@ SCOPES = [
 ]
 
 
-def google_login():
+def google_login() -> Credentials:
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -38,7 +38,7 @@ def google_login():
     return creds
 
 
-def main():
+def main() -> None:
     creds = google_login()
     try:
         # Call the Gmail API
@@ -49,7 +49,7 @@ def main():
         print(f"An error occurred: {error}")
 
 
-def gmail_send_message(service):
+def gmail_send_message(service: any) -> None:
     try:
         message = MIMEMultipart("alternative")
 
@@ -72,8 +72,6 @@ def gmail_send_message(service):
         print(f'Message Id: {send_message["id"]}')
     except HttpError as error:
         print(f"An error occurred: {error}")
-        send_message = None
-    return send_message
 
 
 if __name__ == "__main__":

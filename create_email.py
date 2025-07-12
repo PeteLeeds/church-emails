@@ -4,6 +4,7 @@ import requests
 import calendar
 from datetime import datetime, timezone
 from typing import List
+from icalendar import Event as IcalEvent
 
 CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL")
 CHURCH_ID = os.environ.get("CHURCH_ID")
@@ -12,20 +13,20 @@ if CHURCH_ID == None:
     raise Exception("Church ID is not defined")
 
 
-def get_date_string(date):
+def get_date_string(date: datetime) -> str:
     day = date.day
     month = calendar.month_name[date.month]
     year = date.year
     return f"{day} {month} {year}"
 
 
-def get_time_string(date):
+def get_time_string(date: datetime) -> str:
     minute = date.minute if date.minute >= 10 else f"0{date.minute}"
     return f"{date.hour}:{minute}"
 
 
 class Event:
-    def __init__(self, ical_data):
+    def __init__(self, ical_data: IcalEvent) -> None:
         self.title = ical_data.get("SUMMARY")
         self.dates = [
             {
@@ -36,20 +37,20 @@ class Event:
         self.location = ical_data.get("LOCATION")
         self.description = ical_data.get("DESCRIPTION")
 
-    def in_next_week(self):
+    def in_next_week(self) -> bool:
         now = datetime.now(timezone.utc)
         start_time = self.dates[0]["start_time"]
         return (start_time - now).days >= 0 and (start_time - now).days < 6
 
-    def in_mid_future(self):
+    def in_mid_future(self) -> bool:
         now = datetime.now(timezone.utc)
         start_time = self.dates[0]["start_time"]
         return (start_time - now).days >= 0 and (start_time - now).days < 90
 
-    def merge_event(self, new_event: "Event"):
+    def merge_event(self, new_event: "Event") -> None:
         self.dates += new_event.dates
 
-    def get_datetime_string(self):
+    def get_datetime_string(self) -> str:
         if len(self.dates) == 1:
             start_time: datetime = self.dates[0]["start_time"]
             end_time: datetime = self.dates[0]["end_time"]
@@ -77,7 +78,7 @@ class Event:
             datetime_string += time_string
         return datetime_string
 
-    def format_for_email(self):
+    def format_for_email(self) -> str:
         formatted_event = f"<h3>{self.title}</h3>"
         formatted_event += (
             f"<p><b>{self.location}, {self.get_datetime_string()}</b></p>"
@@ -123,7 +124,7 @@ def get_unique_future_events(
     return unique_events
 
 
-def create_email_message():
+def create_email_message() -> str:
     text = requests.get(
         f"https://www.achurchnearyou.com/church/{CHURCH_ID}/service-and-events/feed/"
     ).text
