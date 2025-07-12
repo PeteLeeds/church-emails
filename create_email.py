@@ -3,6 +3,7 @@ import icalendar
 import requests
 import calendar
 from datetime import datetime, timezone
+from typing import List
 
 CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL")
 CHURCH_ID = os.environ.get("CHURCH_ID")
@@ -26,27 +27,55 @@ def get_time_string(date):
 class Event:
     def __init__(self, ical_data):
         self.title = ical_data.get("SUMMARY")
-        self.start_time = ical_data.get("DTSTART").dt
-        self.end_time = ical_data.get("DTEND").dt
+        self.dates = [
+            {
+                "start_time": ical_data.get("DTSTART").dt,
+                "end_time": ical_data.get("DTEND").dt,
+            }
+        ]
         self.location = ical_data.get("LOCATION")
         self.description = ical_data.get("DESCRIPTION")
 
     def in_next_week(self):
         now = datetime.now(timezone.utc)
-        return (self.start_time - now).days >= 0 and (self.start_time - now).days < 6
+        start_time = self.dates[0]["start_time"]
+        return (start_time - now).days >= 0 and (start_time - now).days < 6
 
     def in_mid_future(self):
         now = datetime.now(timezone.utc)
-        return (self.start_time - now).days >= 0 and (self.start_time - now).days < 90
+        start_time = self.dates[0]["start_time"]
+        return (start_time - now).days >= 0 and (start_time - now).days < 90
+
+    def merge_event(self, new_event: "Event"):
+        self.dates += new_event.dates
 
     def get_datetime_string(self):
-        if (
-            self.start_time.day == self.end_time.day
-            and self.start_time.month == self.end_time.month
-        ):
-            return f"{get_date_string(self.start_time)}, {get_time_string(self.start_time)} - {get_time_string(self.end_time)}"
-        else:
-            return f"{get_date_string(self.start_time)} {get_time_string(self.start_time)} - {get_date_string(self.end_time)} {get_time_string(self.end_time)}"
+        if len(self.dates) == 1:
+            start_time: datetime = self.dates[0]["start_time"]
+            end_time: datetime = self.dates[0]["end_time"]
+            # Option 1: One date
+            if start_time.day == end_time.day and start_time.month == end_time.month:
+                return f"{get_date_string(start_time)}, {get_time_string(start_time)} - {get_time_string(end_time)}"
+            # Option 2: Multiple dates, one continuous event
+            return f"{get_date_string(start_time)} {get_time_string(start_time)} - {get_date_string(end_time)} {get_time_string(end_time)}"
+        # Option 3: Multiple events
+        time_map: dict[str, list] = {}
+        for date in self.dates:
+            date_string = get_date_string(date["start_time"])
+            time_string = f"{get_time_string(date['start_time'])} - {get_time_string(date['end_time'])}"
+            if time_string in time_map:
+                time_map[time_string].append(date_string)
+            else:
+                time_map[time_string] = [date_string]
+        times = list(time_map.keys())
+        datetime_string = ""
+        for key in times:
+            time_string = ""
+            for date in time_map[key]:
+                time_string += f"{date}, "
+            time_string = f"{time_string[:-2]} at {key}"
+            datetime_string += time_string
+        return datetime_string
 
     def format_for_email(self):
         formatted_event = f"<h3>{self.title}</h3>"
@@ -57,25 +86,41 @@ class Event:
         return formatted_event
 
 
-def get_unique_future_events(events):
-    duplicate_event_names = []
-    current_unique_events = []
+def get_this_weeks_events(events: List[Event]) -> List[Event]:
+    events_this_week: List[Event] = []
+    for event in events:
+        if not event.in_next_week():
+            continue
+        new_event = True
+        for event_to_compare in events_this_week:
+            if event_to_compare.title == event.title:
+                event_to_compare.merge_event(event)
+                new_event = False
+                continue
+        if new_event:
+            events_this_week.append(event)
+    return events_this_week
+
+
+def get_unique_future_events(
+    events: List[Event], this_weeks_events: List[Event]
+) -> List[Event]:
+    unique_events: List[Event] = []
+    this_weeks_event_titles = [event.title for event in this_weeks_events]
     for event in events:
         if not event.in_mid_future():
             continue
-        if event.title in duplicate_event_names:
+        if event.title in this_weeks_event_titles:
             continue
-        duplicate = False
-        for i in range(len(current_unique_events)):
-            event_to_compare = current_unique_events[i]
+        new_event = True
+        for event_to_compare in unique_events:
             if event_to_compare.title == event.title:
-                current_unique_events.pop(i)
-                duplicate_event_names.append(event.title)
-                duplicate = True
-                break
-        if not duplicate:
-            current_unique_events.append(event)
-    return current_unique_events
+                event_to_compare.merge_event(event)
+                new_event = False
+                continue
+        if new_event:
+            unique_events.append(event)
+    return unique_events
 
 
 def create_email_message():
@@ -87,11 +132,11 @@ def create_email_message():
     events = [Event(eventData) for eventData in calendar.events]
     email = "<h2>This Week's Events</h2>"
     email += f"<p>For full details of all events, please see our website on <a href=https://www.achurchnearyou.com/church/{CHURCH_ID}/>A Church Near You.</a>"
-    for event in events:
-        if event.in_next_week():
-            email += event.format_for_email()
+    this_weeks_events = get_this_weeks_events(events)
+    for event in this_weeks_events:
+        email += event.format_for_email()
     email += "<h2>Future Events</h2>"
-    for event in get_unique_future_events(events):
+    for event in get_unique_future_events(events, this_weeks_events):
         email += event.format_for_email()
     email += f"<br/>If you have an event you would like to advertise, please contact the church at {CONTACT_EMAIL}"
     return email
