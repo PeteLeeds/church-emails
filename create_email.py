@@ -40,7 +40,7 @@ class Event:
     def in_next_week(self) -> bool:
         now = datetime.now(timezone.utc)
         start_time = self.dates[0]["start_time"]
-        return (start_time - now).days >= 0 and (start_time - now).days < 6
+        return (start_time - now).days >= 0 and (start_time - now).days <= 7
 
     def in_mid_future(self) -> bool:
         now = datetime.now(timezone.utc)
