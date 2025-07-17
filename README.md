@@ -18,6 +18,7 @@ EMAIL_FROM = <Gmail address to send emails from - this should be the same accoun
 EMAIL_TO = <The address to send emails to>
 CONTACT_EMAIL = <A contact email to include in your email for people to get in touch>
 CHURCH_ID = <The ID of your church on A Church Near You>
+CHURCH_LOGO_URL = <A link to your church logo to display on the email (leave blank if not wanted)>
 ```
 
 For re-usability, you may want to save these in an `.env` file.
