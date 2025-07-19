@@ -134,7 +134,7 @@ def create_email_message() -> str:
     events = [Event(eventData) for eventData in calendar.events]
     email = ""
     if CHURCH_LOGO_URL:
-        email += f'<center><img style="width: 25%;" src={CHURCH_LOGO_URL}></img>'
+        email += f'<center><img style="width: 25rem;" src={CHURCH_LOGO_URL}></img>'
         email += f"<h2>Event Update - {get_date_string(datetime.now())}</h2></center>"
     email += "<h2>This Week's Events</h2>"
     email += f"<p>For full details of all events, please see our website on <a href=https://www.achurchnearyou.com/church/{CHURCH_ID}/>A Church Near You.</a>"
