@@ -9,6 +9,7 @@ from icalendar import Event as IcalEvent
 CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL")
 CHURCH_ID = os.environ.get("CHURCH_ID")
 CHURCH_LOGO_URL = os.environ.get("CHURCH_LOGO_URL")
+CHURCH_NAME = os.environ.get("CHURCH_NAME")
 
 if CHURCH_ID == None:
     raise Exception("Church ID is not defined")
@@ -135,7 +136,7 @@ def create_email_message() -> str:
     email = ""
     if CHURCH_LOGO_URL:
         email += f'<center><img style="width: 25rem;" src={CHURCH_LOGO_URL}></img>'
-        email += f"<h2>Event Update - {get_date_string(datetime.now())}</h2></center>"
+        email += f"<h2>{CHURCH_NAME + ' ' if CHURCH_NAME else ''}Event Update - {get_date_string(datetime.now())}</h2></center>"
     email += "<h2>This Week's Events</h2>"
     email += f"<p>For full details of all events, please see our website on <a href=https://www.achurchnearyou.com/church/{CHURCH_ID}/>A Church Near You.</a>"
     this_weeks_events = get_this_weeks_events(events)
