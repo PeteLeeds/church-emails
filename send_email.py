@@ -5,7 +5,7 @@ import os
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import base64
-from create_email import create_email_message
+from create_full_email import create_email
 from google_login import google_login
 
 
@@ -24,7 +24,7 @@ def gmail_send_message(service: any) -> None:
     try:
         message = MIMEMultipart("alternative")
 
-        email_message = create_email_message()
+        email_message = create_email()
 
         message.attach(MIMEText("Here are this week's church events", "plain"))
         message.attach(MIMEText(email_message, "html"))

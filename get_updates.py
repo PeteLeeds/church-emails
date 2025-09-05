@@ -54,6 +54,3 @@ def create_update_email() -> str:
     if len(update_email) > 0:
         return "<h2>Updates</h2>" + update_email
     return ""
-
-
-print(create_update_email())
