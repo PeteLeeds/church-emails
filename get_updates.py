@@ -24,6 +24,8 @@ class Update:
 
 
 def get_update_objects() -> List[Update]:
+    if UPDATES_SPREADSHEET_ID == None:
+        return []
     creds = google_login()
     service = build("sheets", "v4", credentials=creds)
     sheet_info = (
