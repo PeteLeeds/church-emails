@@ -44,12 +44,14 @@ def get_update_objects() -> List[Update]:
 
 
 def create_update_email() -> str:
-    update_email = "<h2>Updates</h2>"
     updates = get_update_objects()
+    update_email = ""
     for update in updates:
         if update.in_date_range():
             update_email += update.format_for_email()
-    return update_email
+    if len(update_email) > 0:
+        return "<h2>Updates</h2>" + update_email
+    return ""
 
 
 print(create_update_email())
