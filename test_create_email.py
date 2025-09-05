@@ -48,10 +48,10 @@ class EventTestCase(unittest.TestCase):
 
     def test_not_in_next_week(self):
         self.mock_event.add(
-            "dtstart", dt.datetime(2025, 6, 8, 10, 30, 0, tzinfo=dt.timezone.utc)
+            "dtstart", dt.datetime(2025, 6, 9, 10, 30, 0, tzinfo=dt.timezone.utc)
         )
         self.mock_event.add(
-            "dtend", dt.datetime(2025, 6, 8, 11, 30, 0, tzinfo=dt.timezone.utc)
+            "dtend", dt.datetime(2025, 6, 9, 11, 30, 0, tzinfo=dt.timezone.utc)
         )
         event = create_email.Event(self.mock_event)
         self.assertEqual(event.in_next_week(), False)
