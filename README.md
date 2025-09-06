@@ -10,6 +10,13 @@ If you do not already have a Google Cloud project set up, first use [these instr
 
 Then you will need to enable the Gmail API using the instructions on [this page](https://developers.google.com/workspace/gmail/api/quickstart/python). Once you have a `credentials.json` file, copy this into this repository.
 
+### Setup Update Form
+To add updates and notices from outside A Church Near You into your church email, you can create a Google Form which outputs to a Google Sheets spreadsheet (or, if you prefer, create a Google Sheet manually), and link this into the application.
+
+You can use [this form](https://docs.google.com/forms/d/e/1FAIpQLSejWMF-udmg4n7qSAeXXjjZtI3aRGrsqS0dYnNYLEAdeoyC5g/viewform) as your template. The options must be in the same order - Description, Details, Date. You can automatically link responses to a Google Sheets spreadsheet by clicking 'Responses' and then 'Link to Sheets'.
+
+Once you have your spreadsheet, you can copy the ID from the spreadsheet URL and insert it as an environment variable (described below). As an example, a sheet with the URL `https://docs.google.com/spreadsheets/d/abcdefgHIJKLMnopqrstuVWXYZ/edit` would have an ID of `abcdefgHIJKLMnopqrstuVWXYZ`.
+
 ### Environment setup
 
 In order to run this project, you will need to set the following environment variables:
@@ -20,6 +27,7 @@ CONTACT_EMAIL = <A contact email to include in your email for people to get in t
 CHURCH_ID = <The ID of your church on A Church Near You>
 CHURCH_LOGO_URL = <A link to your church logo to display on the email (leave blank if not wanted)>
 CHURCH_NAME = <The name of your church to display on the email header (leave blank if not wanted)>
+UPDATES_SPREADSHEET_ID = <The ID of the Google sheet your forms are sending information to (leave blank if not wanted)>
 ```
 
 For re-usability, you may want to save these in an `.env` file.
