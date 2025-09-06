@@ -9,9 +9,6 @@ from date_string import get_date_string
 CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL")
 CHURCH_ID = os.environ.get("CHURCH_ID")
 
-if CHURCH_ID == None:
-    raise Exception("Church ID is not defined")
-
 
 def get_time_string(date: datetime) -> str:
     minute = date.minute if date.minute >= 10 else f"0{date.minute}"
@@ -118,6 +115,8 @@ def get_unique_future_events(
 
 
 def create_event_email() -> str:
+    if CHURCH_ID == None:
+        raise Exception("Church ID is not defined")
     text = requests.get(
         f"https://www.achurchnearyou.com/church/{CHURCH_ID}/service-and-events/feed/"
     ).text
