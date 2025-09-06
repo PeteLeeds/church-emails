@@ -18,14 +18,14 @@ def create_event_email() -> str:
     calendar = icalendar.Calendar.from_ical(text)
     events = [Event(eventData) for eventData in calendar.events]
     email = ""
-    email += "<h2>This Week's Events</h2>"
+    email += "<h1>This Week's Events</h1>"
     email += f"<p>For full details of all events, please see our website on <a href=https://www.achurchnearyou.com/church/{CHURCH_ID}/>A Church Near You.</a>"
     this_weeks_events = get_this_weeks_events(events)
     sections = get_sections()
     populate_section_events(sections, this_weeks_events)
     for section in sections:
         email += section.create_section_email()
-    email += "<h2>Future Events</h2>"
+    email += "<h1>Future Events</h1>"
     for event in get_unique_future_events(events, this_weeks_events):
         email += event.format_for_email()
     email += f"<br/>If you have an event you would like to advertise, please contact the church at {CONTACT_EMAIL}"

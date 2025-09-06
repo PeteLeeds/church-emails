@@ -31,7 +31,7 @@ class Section:
         self.events.append(event)
 
     def create_section_email(self) -> str:
-        email_string = f"<h3>{self.title}</h3>" if self.displayTitle else ""
+        email_string = f"<h2>{self.title}</h2>" if self.displayTitle else ""
         for event in self.events:
             email_string += event.format_for_email()
         return email_string
