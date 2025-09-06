@@ -10,6 +10,13 @@ If you do not already have a Google Cloud project set up, first use [these instr
 
 Then you will need to enable the Gmail API using the instructions on [this page](https://developers.google.com/workspace/gmail/api/quickstart/python). Once you have a `credentials.json` file, copy this into this repository.
 
+### Setup Update Form
+To add updates and notices from outside A Church Near You into your church email, you can create a Google Form which outputs to a Google Sheets spreadsheet (or, if you prefer, create a Google Sheet manually), and link this into the application.
+
+You can use [this form](https://docs.google.com/forms/d/e/1FAIpQLSejWMF-udmg4n7qSAeXXjjZtI3aRGrsqS0dYnNYLEAdeoyC5g/viewform) as your template. The options must be in the same order - Description, Details, Date. You can automatically link responses to a Google Sheets spreadsheet by clicking 'Responses' and then 'Link to Sheets'.
+
+Once you have your spreadsheet, you can copy the ID from the spreadsheet URL and insert it as an environment variable (described below). As an example, a sheet with the URL `https://docs.google.com/spreadsheets/d/abcdefgHIJKLMnopqrstuVWXYZ/edit` would have an ID of `abcdefgHIJKLMnopqrstuVWXYZ`.
+
 ### Environment setup
 
 In order to run this project, you will need to set the following environment variables:
