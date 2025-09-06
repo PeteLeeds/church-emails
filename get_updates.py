@@ -52,5 +52,5 @@ def create_update_email() -> str:
         if update.in_date_range():
             update_email += update.format_for_email()
     if len(update_email) > 0:
-        return "<h2>Updates</h2>" + update_email
+        return "<h2>Updates and Notices</h2>" + update_email
     return ""
