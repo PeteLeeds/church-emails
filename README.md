@@ -35,3 +35,10 @@ For re-usability, you may want to save these in an `.env` file.
 ### Run the function
 
 To run the code to send an email, run `python send_email.py`.
+
+### Sections
+It is possible to split the week's events into sections using a file called `sections.json`. A template file (`sections.template.json`) is provided in this repository for you to copy and modify as you need. The code evaluates the sections in the order they appear in the JSON file. The fields are as follows:
+- `title` - the title of the section, to be displayed on the email.
+- `displayTitle` - whether you want to display the title on the email. You might want to set this to `False` if you only have one section.
+- `default` - if this is set to True, anything which does not match a section higher up the array will match this one.
+- `filters` - words to look for in the **description** of the event. If any of these words are found in the description, the event is matched to this section.
