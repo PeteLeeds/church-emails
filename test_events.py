@@ -4,8 +4,8 @@ import datetime as dt
 
 # import zoneinfo
 import unittest
-import get_events
-from get_events import (
+import events
+from events import (
     get_date_string,
     get_time_string,
     get_this_weeks_events,
@@ -43,7 +43,7 @@ class EventTestCase(unittest.TestCase):
         self.mock_event.add(
             "dtend", dt.datetime(2025, 6, 2, 11, 30, 0, tzinfo=dt.timezone.utc)
         )
-        event = get_events.Event(self.mock_event)
+        event = events.Event(self.mock_event)
         self.assertEqual(event.in_next_week(), True)
 
     def test_not_in_next_week(self):
@@ -53,7 +53,7 @@ class EventTestCase(unittest.TestCase):
         self.mock_event.add(
             "dtend", dt.datetime(2025, 6, 9, 11, 30, 0, tzinfo=dt.timezone.utc)
         )
-        event = get_events.Event(self.mock_event)
+        event = events.Event(self.mock_event)
         self.assertEqual(event.in_next_week(), False)
 
     def test_in_mid_future(self):
@@ -63,7 +63,7 @@ class EventTestCase(unittest.TestCase):
         self.mock_event.add(
             "dtend", dt.datetime(2025, 6, 8, 11, 30, 0, tzinfo=dt.timezone.utc)
         )
-        event = get_events.Event(self.mock_event)
+        event = events.Event(self.mock_event)
         self.assertEqual(event.in_mid_future(), True)
 
     def test_not_in_mid_future(self):
@@ -73,7 +73,7 @@ class EventTestCase(unittest.TestCase):
         self.mock_event.add(
             "dtend", dt.datetime(2025, 9, 8, 11, 30, 0, tzinfo=dt.timezone.utc)
         )
-        event = get_events.Event(self.mock_event)
+        event = events.Event(self.mock_event)
         self.assertEqual(event.in_mid_future(), False)
 
     def test_format_constituent_parts(self):
@@ -83,7 +83,7 @@ class EventTestCase(unittest.TestCase):
         self.mock_event.add(
             "dtend", dt.datetime(2025, 6, 2, 11, 30, 0, tzinfo=dt.timezone.utc)
         )
-        event = get_events.Event(self.mock_event)
+        event = events.Event(self.mock_event)
         formatted_email = event.format_for_email()
         self.assertIn("Morning Worship", formatted_email)
         self.assertIn("Join us this morning for a time of worship", formatted_email)
@@ -97,7 +97,7 @@ class EventTestCase(unittest.TestCase):
         self.mock_event.add(
             "dtend", dt.datetime(2025, 6, 2, 11, 30, 0, tzinfo=dt.timezone.utc)
         )
-        event = get_events.Event(self.mock_event)
+        event = events.Event(self.mock_event)
 
         ical_event_to_merge = create_ical_event(
             "Morning Worship",
@@ -106,7 +106,7 @@ class EventTestCase(unittest.TestCase):
             dt.datetime(2025, 6, 3, 10, 30, 0, tzinfo=dt.timezone.utc),
             dt.datetime(2025, 6, 3, 11, 30, 0, tzinfo=dt.timezone.utc),
         )
-        event_to_merge = get_events.Event(ical_event_to_merge)
+        event_to_merge = events.Event(ical_event_to_merge)
         event.merge_event(event_to_merge)
         formatted_email = event.format_for_email()
         self.assertIn("2 June 2025, 3 June 2025 at 10:30 - 11:30", formatted_email)
@@ -137,7 +137,7 @@ class TestFilterEvents(unittest.TestCase):
             dt.datetime(2025, 6, 3, 10, 30, 0, tzinfo=dt.timezone.utc),
             dt.datetime(2025, 6, 3, 11, 30, 0, tzinfo=dt.timezone.utc),
         )
-        self.event_1 = get_events.Event(event_1_ical)
+        self.event_1 = events.Event(event_1_ical)
 
         event_2_ical = create_ical_event(
             "Evening Worship",
@@ -146,7 +146,7 @@ class TestFilterEvents(unittest.TestCase):
             dt.datetime(2025, 6, 3, 18, 30, 0, tzinfo=dt.timezone.utc),
             dt.datetime(2025, 6, 3, 19, 30, 0, tzinfo=dt.timezone.utc),
         )
-        self.event_2 = get_events.Event(event_2_ical)
+        self.event_2 = events.Event(event_2_ical)
 
         event_2_repeater_ical = create_ical_event(
             "Evening Worship",
@@ -155,7 +155,7 @@ class TestFilterEvents(unittest.TestCase):
             dt.datetime(2025, 6, 4, 18, 30, 0, tzinfo=dt.timezone.utc),
             dt.datetime(2025, 6, 4, 19, 30, 0, tzinfo=dt.timezone.utc),
         )
-        self.event_2_repeater = get_events.Event(event_2_repeater_ical)
+        self.event_2_repeater = events.Event(event_2_repeater_ical)
 
         future_event_ical = create_ical_event(
             "Future Worship",
@@ -164,7 +164,7 @@ class TestFilterEvents(unittest.TestCase):
             dt.datetime(2025, 7, 4, 18, 30, 0, tzinfo=dt.timezone.utc),
             dt.datetime(2025, 7, 4, 19, 30, 0, tzinfo=dt.timezone.utc),
         )
-        self.future_event = get_events.Event(future_event_ical)
+        self.future_event = events.Event(future_event_ical)
 
         past_event_ical = create_ical_event(
             "Past Worship",
@@ -173,7 +173,7 @@ class TestFilterEvents(unittest.TestCase):
             dt.datetime(2025, 5, 4, 18, 30, 0, tzinfo=dt.timezone.utc),
             dt.datetime(2025, 5, 4, 19, 30, 0, tzinfo=dt.timezone.utc),
         )
-        self.past_event = get_events.Event(past_event_ical)
+        self.past_event = events.Event(past_event_ical)
 
     def test_get_this_weeks_events_merges_events(self):
         events = [self.event_1, self.event_2, self.event_2_repeater]
@@ -236,10 +236,10 @@ class TestFilterEvents(unittest.TestCase):
             dt.datetime(2025, 7, 5, 18, 30, 0, tzinfo=dt.timezone.utc),
             dt.datetime(2025, 7, 5, 19, 30, 0, tzinfo=dt.timezone.utc),
         )
-        future_event_repeater = get_events.Event(future_event_repeater_ical)
+        future_event_repeater = events.Event(future_event_repeater_ical)
 
-        events = [self.event_1, self.future_event, future_event_repeater]
-        this_weeks_events = get_unique_future_events(events, [])
+        event_list = [self.event_1, self.future_event, future_event_repeater]
+        this_weeks_events = get_unique_future_events(event_list, [])
         self.assertEqual(len(this_weeks_events), 2)
         self.assertEqual(this_weeks_events[0].title, "Morning Worship")
         self.assertEqual(this_weeks_events[1].title, "Future Worship")
