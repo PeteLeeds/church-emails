@@ -1,0 +1,16 @@
+[
+    {
+        "title": "Services",
+        "displayTitle": true,
+        "default": false,
+        "filters": [
+            "service",
+            "worship"
+        ]
+    },
+    {
+        "title": "Other events",
+        "displayTitle": true,
+        "default": true
+    }
+]

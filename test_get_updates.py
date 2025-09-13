@@ -61,7 +61,7 @@ class CreateUpdateEmailTest(unittest.TestCase):
         ]
         update_objects_mock.return_value = [Update(update_1), Update(update_2)]
         update_email = create_update_email()
-        self.assertIn("<h2>Updates and Notices</h2>", update_email)
+        self.assertIn("<h1>Updates and Notices</h1>", update_email)
         self.assertIn("<h3>Hot Meals Needed</h3>", update_email)
         self.assertNotIn("<h3>New Curate</h3>", update_email)
 
