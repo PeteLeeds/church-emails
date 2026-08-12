@@ -12,6 +12,11 @@ SCOPES = [
 ]
 
 
+def get_new_creds() -> Credentials:
+    flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+    return flow.run_local_server(port=0)
+
+
 def google_login() -> Credentials:
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
@@ -22,10 +27,13 @@ def google_login() -> Credentials:
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+            try:
+                creds.refresh(Request())
+            except Exception:
+                os.remove("token.json")
+                creds = get_new_creds()
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-            creds = flow.run_local_server(port=0)
+            creds = get_new_creds()
         # Save the credentials for the next run
         with open("token.json", "w") as token:
             token.write(creds.to_json())
